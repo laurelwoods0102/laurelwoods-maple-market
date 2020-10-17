@@ -1,0 +1,3 @@
+python demo_inference.py --dataset_name=number_plates --batch_size=8, \
+--checkpoint='models/research/attention_ocr/number_plates_model_logs/model.ckpt-6000', \
+--image_path_pattern=/home/anuj/crops/%d.png

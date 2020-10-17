@@ -1,0 +1,3 @@
+cd D:\Laurelwoods_IDE\laurelwoods-maple-market\attention-ocr
+.tensorflow\Scripts\activate
+python train.py --dataset_name=laurelwoods_maple_dataset

@@ -3,3 +3,6 @@ data
 attention-ocr-original
 .tensorflow
 __pycache__
+train
+dataset
+models

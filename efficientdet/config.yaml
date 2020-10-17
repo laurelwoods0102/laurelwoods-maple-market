@@ -1,0 +1,2 @@
+num_classes: 3
+label_map: {0: class_0, 1: class_1, 2: class_2}
