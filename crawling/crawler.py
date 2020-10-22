@@ -14,12 +14,6 @@ headers = {'User-Agent':'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/53
 base_url = "https://maple.market/items"
 
 # configs
-with open(path + "/config/servers.json", "r", encoding="utf-8") as j:
-    servers = json.load(j)
-
-with open(path + "/config/item_names.json", "r", encoding="utf-8") as j:
-    item_names = json.load(j)
-
 item_states = ["sale", "history"]
 item_states_id = {
     "sale": "auction-list",
@@ -27,9 +21,9 @@ item_states_id = {
 }
 
 # data format
-columns = ["price", "option", "additional", "star_force", "upgrade", "time_remained"]
+columns = ["price", "option", "additional", "star_force", "upgrade", "time_remained", "item_code"]
 
-def item_parser(item, is_additional_option=False):      
+def item_parser(item, is_additional_option):      
     # additional_option == 추옵 (무기류)
     if is_additional_option:
         mapping = [1, 3, 4, 5, 7]
@@ -85,55 +79,55 @@ def item_image_parser(item):
 
     return item_image
 
-# Roop
-server = servers[3]
-j = 50
-item_name = item_names[j]
 
-if j < 95:
-    is_additional_option = True
-else:
-    is_additional_option = False
+def main(item_info):
+    server, item_name = item_info[0], item_info[1]
+    timestamp = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
 
-timestamp = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+    url = "{}/{}/{}".format(base_url, item_name.replace(" ", ""), server)
 
-url = "{}/{}/{}".format(base_url, item_name.replace(" ", ""), server)
+    req = requests.get(url, headers=headers)
+    html = req.text
+    soup = BeautifulSoup(html, 'lxml')
 
-req = requests.get(url, headers=headers)
-html = req.text
-soup = BeautifulSoup(html, 'lxml')
+    if "<" in item_name:
+        item_name = item_name.replace("<", "(").replace(">", ")")
+    if ":" in item_name:
+        item_name = item_name.replace(":", "@")
 
-if "<" in item_name:
-    item_name = item_name.replace("<", "(").replace(">", ")")
-if ":" in item_name:
-    item_name = item_name.replace(":", "@")
+    for item_state in item_states:
+        root_data_dir = "{}/data/{}/{}/{}".format(path, server, item_name, item_state)
+        img_dir = "{}/images/{}".format(root_data_dir, timestamp)
+        os.mkdir(img_dir)
 
-for item_state in item_states:
-    data_dir = path + "/data/" + server + "/" + item_name + "/" + item_state
+        div = soup.find(id=item_states_id[item_state])
+        table = div.find('table')
+        table_head = table.select('thead')[0]
+        table_body = table.select('tbody')[0]
+        items = table_body.find_all("tr")
 
-    div = soup.find(id=item_states_id[item_state])
-    table = div.find('table')
-    table_head = table.select('thead')[0]
-    table_body = table.select('tbody')[0]
-    items = table_body.find_all("tr")
+        is_additional_option = (table_head.find_all("th")[2].text == "추옵")
 
-    result_data = []
-    result_images = []
+        result_data = []
 
-    for item in items:
-        d = item_parser(item, is_additional_option=is_additional_option)
-        result_data.append(d)
-        #img = item_image_parser(item)
-        #result_images.append(img)
+        for item_code, item in enumerate(items[:2]):
+            data = item_parser(item, is_additional_option)
+            data.append(item_code) 
+            result_data.append(data)
+            
+            img = item_image_parser(item)
+            img.save("{}/{}.png".format(img_dir, item_code))
 
-    #assert(len(result_data) == len(result_images))
-
-    print(result_data)
-    print(item_name)
-
-    with open("{}/data/{}.csv".format(data_dir, timestamp), "w", encoding="utf-8") as c:
-        c.write(",".join(columns))
-        c.write("\n")
-        for d in result_data:
-            c.write(",".join(map(str, d)))
+        with open("{}/data/{}.csv".format(root_data_dir, timestamp), "w", encoding="utf-8") as c:
+            c.write(",".join(columns))
             c.write("\n")
+            for d in result_data:
+                c.write(",".join(map(str, d)))
+                c.write("\n")
+
+if __name__ == "__main__":
+    server = "스카니아"
+    #item_name = "앱솔랩스 스펠링완드"
+    item_name = "아케인셰이드 가즈"
+
+    main((item_name, server))
