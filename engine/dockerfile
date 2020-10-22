@@ -9,4 +9,7 @@ RUN apt-get -y update && \
 RUN pip install --upgrade pip && \
     pip install pandas
 
+RUN mkdir /home/engine
+WORKDIR /home/engine
+
 #CMD tail -f /dev/null

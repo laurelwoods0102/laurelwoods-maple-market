@@ -110,7 +110,7 @@ def main(item_info):
 
         result_data = []
 
-        for item_code, item in enumerate(items[:2]):
+        for item_code, item in enumerate(items[:2]):        ###############################
             data = item_parser(item, is_additional_option)
             data.append(item_code) 
             result_data.append(data)

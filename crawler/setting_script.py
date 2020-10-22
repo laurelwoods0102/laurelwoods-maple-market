@@ -14,6 +14,7 @@ for item_name in item_names:
         item_name = item_name.replace("<", "(").replace(">", ")")
     if ":" in item_name:
         item_name = item_name.replace(":", "@")
+
     for server in servers:
         data_dir = path + "/data/" + server + "/" + item_name
         os.makedirs(data_dir)
