@@ -5,18 +5,26 @@ services:
       context: ./crawling
       dockerfile: dockerfile
     container_name: laurelwoods-crawler
-    #volumes: laurelwoods-maple-volume
-    volumes: exm
+    volumes: 
+      - exm:/home
+      #- laurelwoods-maple-volume:/home
+    ports:
+      - "8886:8886"
     command: tail -f /dev/null
 
   laurelwoods-maple-market-engine:
-    image: tensorflow/tensorflow
+    build:
+      context: ./engine
+      dockerfile: dockerfile
     container_name: laurelwoods-maple-market-engine
-    #volumes: laurelwoods-maple-volume
-    volumes: exm
+    #volumes: 
+    volumes: 
+      - exm:/home
+      #- laurelwoods-maple-volume:/home
+    ports:
+      - "8887:8887"
     command: tail -f /dev/null
       
-
 volumes:
   #laurelwoods-maple-volume
-  exm
+  exm:

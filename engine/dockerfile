@@ -1,0 +1,12 @@
+FROM tensorflow/tensorflow
+LABEL MAINTAINER "Laurelwoods"
+
+ENV PYTHONUNBUFFERED 1
+
+RUN apt-get -y update && \
+    apt-get -y install nano
+
+RUN pip install --upgrade pip && \
+    pip install pandas
+
+#CMD tail -f /dev/null
