@@ -1,0 +1,8 @@
+FROM python
+LABEL MAINTAINER "Laurelwoods"
+
+ENV PYTHONUNBUFFERED 1
+
+RUN apt-get -y update
+
+RUN pip install --upgrade pip

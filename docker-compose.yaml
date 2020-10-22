@@ -1,0 +1,22 @@
+version: '3.7'
+services:
+  laurelwoods-crawler:
+    build:
+      context: ./crawling
+      dockerfile: dockerfile
+    container_name: laurelwoods-crawler
+    #volumes: laurelwoods-maple-volume
+    volumes: exm
+    command: tail -f /dev/null
+
+  laurelwoods-maple-market-engine:
+    image: tensorflow/tensorflow
+    container_name: laurelwoods-maple-market-engine
+    #volumes: laurelwoods-maple-volume
+    volumes: exm
+    command: tail -f /dev/null
+      
+
+volumes:
+  #laurelwoods-maple-volume
+  exm
